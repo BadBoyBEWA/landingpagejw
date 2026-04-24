@@ -2,35 +2,36 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function PaymentModal({ isOpen, onClose, method }) {
+  const [isPending, setIsPending] = useState(false);
   if (!isOpen) return null;
 
   const details = {
     PayPal: {
       icon: 'account_balance_wallet',
       color: 'text-[#0070ba]',
-      instruction: 'Please send the total amount to our verified PayPal address:',
-      value: 'payments@immortallegacy.com',
-      note: 'Include your full name in the transaction notes for faster verification.'
+      instruction: 'Our Team coordinates PayPal address:',
+      value: 'Request via jaylinwilliamsvipcard@usa.com',
+      note: 'Payments are typically verified within 15-30 minutes.'
     },
     CashApp: {
       icon: 'attach_money',
       color: 'text-[#00d084]',
-      instruction: 'Scan or use the Cashtag below to complete your payment:',
-      value: '$ImmortalLegacyVIP',
+      instruction: 'Our Team coordinates Cashapp Tag:',
+      value: 'Request via jaylinwilliamsvipcard@usa.com',
       note: 'Payments are typically verified within 15-30 minutes.'
     },
     Bitcoin: {
       icon: 'currency_bitcoin',
       color: 'text-[#f7931a]',
       instruction: 'Transfer the equivalent BTC amount to the following secure wallet:',
-      value: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+      value: 'Request via jaylinwilliamsvipcard@usa.com',
       note: 'Ensure you account for network fees to avoid payment delays.'
     },
     'Wire Transfer': {
       icon: 'account_balance',
       color: 'text-white',
       instruction: 'Our banking coordinates for international wire transfers:',
-      value: 'Request via support@immortallegacy.com',
+      value: 'Request via jaylinwilliamsvipcard@usa.com',
       note: 'Wire transfers can take 1-3 business days to clear.'
     }
   };
@@ -54,25 +55,48 @@ function PaymentModal({ isOpen, onClose, method }) {
         </div>
         
         <div className="p-8 space-y-6 text-center">
-          <div className="space-y-2">
-            <p className="text-[0.6875rem] font-medium tracking-[0.1em] uppercase text-on-surface-variant">{current.instruction}</p>
-            <div className="bg-surface-container-high border border-outline-variant/10 p-4 text-[0.875rem] font-bold tracking-[0.15em] text-tertiary break-all">
-              {current.value}
-            </div>
-          </div>
-          
-          <div className="border-l-2 border-tertiary/40 bg-white/5 p-4 text-left">
-            <p className="text-[0.625rem] leading-relaxed text-on-surface-variant uppercase tracking-[0.1em]">
-              {current.note}
-            </p>
-          </div>
+          {!isPending ? (
+            <>
+              <div className="space-y-2">
+                <p className="text-[0.6875rem] font-medium tracking-[0.1em] uppercase text-on-surface-variant">{current.instruction}</p>
+                <div className="bg-surface-container-high border border-outline-variant/10 p-4 text-[0.875rem] font-bold tracking-[0.15em] text-tertiary break-all">
+                  {current.value}
+                </div>
+              </div>
+              
+              <div className="border-l-2 border-tertiary/40 bg-white/5 p-4 text-left">
+                <p className="text-[0.625rem] leading-relaxed text-on-surface-variant uppercase tracking-[0.1em]">
+                  {current.note}
+                </p>
+              </div>
 
-          <button 
-            onClick={onClose}
-            className="w-full h-14 bg-gradient-to-r from-tertiary to-tertiary/80 text-background font-bold uppercase tracking-[0.2em] text-[0.75rem] hover:brightness-110 transition-all duration-500"
-          >
-            I Have Sent Payment
-          </button>
+              <button 
+                onClick={() => setIsPending(true)}
+                className="w-full h-14 bg-gradient-to-r from-tertiary to-tertiary/80 text-background font-bold uppercase tracking-[0.2em] text-[0.75rem] hover:brightness-110 transition-all duration-500"
+              >
+                I Have Sent Payment
+              </button>
+            </>
+          ) : (
+            <div className="py-12 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="relative inline-block">
+                <div className="absolute inset-0 bg-tertiary/20 blur-2xl rounded-full animate-pulse"></div>
+                <span className="material-symbols-outlined text-6xl text-tertiary relative z-10">history_toggle_off</span>
+              </div>
+              <div className="space-y-2">
+                <h4 className="text-lg font-black uppercase italic text-white tracking-widest">Verification Pending</h4>
+                <p className="text-[0.6875rem] text-on-surface-variant uppercase tracking-widest leading-relaxed">
+                  Our administrative team is currently cross-referencing your transaction. Access will be granted once confirmed.
+                </p>
+              </div>
+              <button 
+                onClick={onClose}
+                className="w-full h-14 border border-outline-variant/20 text-white font-bold uppercase tracking-[0.2em] text-[0.75rem] hover:bg-white/5 transition-all"
+              >
+                Return to Portal
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

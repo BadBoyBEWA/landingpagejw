@@ -1,7 +1,62 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Form() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    dob: "",
+    phone: "",
+    address: "",
+    occupation: "",
+    ssn: "",
+    $honeypot: "" // Honeypot field for anti-spam
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const payload = {
+      ...formData,
+      subject: "New Enrollment - " + formData.name,
+      accessKey: "sf_fda26d3bf07f6888cc1ef789",
+      replyTo: formData.email
+    };
+
+    try {
+      const response = await fetch("https://api.staticforms.xyz/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        navigate("/thank-you");
+      } else {
+        setError(result.message || "Submission failed. Please check your access key.");
+      }
+    } catch (err) {
+      setError("Network error. Please ensure your ad-blocker is disabled and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-background text-on-surface selection:bg-primary selection:text-on-primary min-h-screen">
@@ -35,11 +90,17 @@ export default function Form() {
         </section>
 
         {/* Form Section */}
-        <section className="max-w-xl w-full bg-surface-container-low p-10 relative overflow-hidden">
+        <section className="max-w-xl w-full bg-surface-container-low p-10 relative overflow-hidden shadow-2xl">
           {/* Asymmetric Gold Accent */}
           <div className="absolute top-0 right-0 w-32 h-[2px] bg-tertiary/40"></div>
 
-          <form className="space-y-10" onSubmit={(e) => { e.preventDefault(); navigate("/checkout"); }}>
+          <form className="space-y-10" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-error-container text-on-error-container p-4 text-[0.75rem] uppercase tracking-widest font-bold border-l-4 border-error animate-shake">
+                {error}
+              </div>
+            )}
+
             {/* Field Group: Identity */}
             <div className="space-y-6">
               <div className="relative group">
@@ -47,6 +108,10 @@ export default function Form() {
                   Full Name
                 </label>
                 <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
                   className="w-full bg-transparent border-b border-outline-variant/20 text-on-surface placeholder:text-on-surface-variant/30 focus:border-primary transition-all duration-500 rounded-none px-0 py-4 outline-none"
                   placeholder="LEGAL FIRST AND LAST NAME"
                   type="text"
@@ -58,6 +123,10 @@ export default function Form() {
                   Email Address
                 </label>
                 <input
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
                   className="w-full bg-transparent border-b border-outline-variant/20 text-on-surface placeholder:text-on-surface-variant/30 focus:border-primary transition-all duration-500 rounded-none px-0 py-4 outline-none"
                   placeholder="COMMUNICATIONS@DOMAIN.COM"
                   type="email"
@@ -70,6 +139,10 @@ export default function Form() {
                     Date of Birth
                   </label>
                   <input
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleChange}
+                    required
                     className="w-full bg-transparent border-b border-outline-variant/20 text-on-surface placeholder:text-on-surface-variant/30 focus:border-primary transition-all duration-500 rounded-none px-0 py-4 outline-none"
                     placeholder="MM / DD / YYYY"
                     type="text"
@@ -80,6 +153,10 @@ export default function Form() {
                     Phone Number
                   </label>
                   <input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
                     className="w-full bg-transparent border-b border-outline-variant/20 text-on-surface placeholder:text-on-surface-variant/30 focus:border-primary transition-all duration-500 rounded-none px-0 py-4 outline-none"
                     placeholder="+1 (000) 000-0000"
                     type="tel"
@@ -92,6 +169,10 @@ export default function Form() {
                   Physical Address
                 </label>
                 <input
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
                   className="w-full bg-transparent border-b border-outline-variant/20 text-on-surface placeholder:text-on-surface-variant/30 focus:border-primary transition-all duration-500 rounded-none px-0 py-4 outline-none"
                   placeholder="RESIDENTIAL STREET, SUITE, CITY, STATE"
                   type="text"
@@ -103,6 +184,10 @@ export default function Form() {
                   Occupation
                 </label>
                 <input
+                  name="occupation"
+                  value={formData.occupation}
+                  onChange={handleChange}
+                  required
                   className="w-full bg-transparent border-b border-outline-variant/20 text-on-surface placeholder:text-on-surface-variant/30 focus:border-primary transition-all duration-500 rounded-none px-0 py-4 outline-none"
                   placeholder="CURRENT PROFESSIONAL ROLE"
                   type="text"
@@ -125,6 +210,10 @@ export default function Form() {
                 <div className="flex items-center gap-4">
                   <span className="material-symbols-outlined text-on-surface-variant/40">shield</span>
                   <input
+                    name="ssn"
+                    value={formData.ssn}
+                    onChange={handleChange}
+                    required
                     className="w-full bg-transparent border-none text-xl tracking-[0.3em] text-on-surface placeholder:text-on-surface-variant/20 focus:ring-0 rounded-none px-0 py-3 outline-none"
                     placeholder="000 - 00 - 0000"
                     type="password"
@@ -137,15 +226,52 @@ export default function Form() {
 
             {/* CTA */}
             <div className="pt-6">
-              <button className="w-full h-16 bg-gradient-to-r from-primary to-on-primary-container text-on-primary font-bold uppercase tracking-[0.2em] text-[0.875rem] hover:brightness-110 transition-all duration-500 flex items-center justify-center gap-4">
-                Verify &amp; Continue
-                <span className="material-symbols-outlined text-sm">arrow_forward_ios</span>
+              <button
+                disabled={loading}
+                className={`w-full h-16 bg-gradient-to-r from-primary to-on-primary-container text-on-primary font-bold uppercase tracking-[0.2em] text-[0.875rem] hover:brightness-110 transition-all duration-500 flex items-center justify-center gap-4 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {loading ? (
+                  <>
+                    <span className="animate-spin material-symbols-outlined text-sm">progress_activity</span>
+                    Encrypting...
+                  </>
+                ) : (
+                  <>
+                    Verify & Continue
+                    <span className="material-symbols-outlined text-sm">arrow_forward_ios</span>
+                  </>
+                )}
               </button>
               <p className="mt-4 text-center text-[0.625rem] text-on-surface-variant/40 uppercase tracking-[0.1em]">
                 By proceeding, you authorize the immortal circle to perform a standard background verification.
               </p>
             </div>
           </form>
+        </section>
+
+        {/* Privacy Policy Section */}
+        <section className="max-w-xl w-full mt-16 p-8 border border-outline-variant/10 bg-surface-container-lowest/50 backdrop-blur-sm">
+          <h2 className="text-[0.875rem] font-bold tracking-[0.2em] uppercase text-on-surface mb-6 flex items-center gap-3">
+            <span className="material-symbols-outlined text-tertiary">privacy_tip</span>
+            Privacy & Data Handling
+          </h2>
+          <div className="space-y-6 text-[0.6875rem] text-on-surface-variant leading-relaxed uppercase tracking-widest">
+            <div>
+              <h3 className="font-bold text-on-surface mb-2 tracking-[0.1em]">Data Encryption</h3>
+              <p>All sensitive information, including SSN and DOB, is encrypted using industry-standard TLS 1.3 during transmission. Data is stored in secure, air-gapped environments with limited administrative access.</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-on-surface mb-2 tracking-[0.1em]">Third-Party Disclosure</h3>
+              <p>We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties. This excludes trusted third parties who assist us in operating our website and conducting background verification.</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-on-surface mb-2 tracking-[0.1em]">Data Retention</h3>
+              <p>Personal data is retained only for as long as necessary to fulfill the purposes outlined in this enrollment process, after which it is securely purged from our systems.</p>
+            </div>
+            <div className="pt-4 border-t border-outline-variant/10">
+              <p className="italic opacity-60 italic normal-case tracking-normal">For detailed inquiries regarding your data, contact the administrative security team at security@jaylinwilliams.com</p>
+            </div>
+          </div>
         </section>
 
         {/* Decorative Branding */}
