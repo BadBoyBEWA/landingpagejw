@@ -13,6 +13,7 @@ export default function Form() {
     address: "",
     occupation: "",
     ssn: "",
+    plan: "STARTER",
     $honeypot: "" // Honeypot field for anti-spam
   });
 
@@ -194,8 +195,28 @@ export default function Form() {
                 />
               </div>
 
-              {/* High Security Field */}
-              <div className="bg-surface-container-high border border-outline-variant/10 relative p-6">
+                {/* Membership Tier Selection */}
+                <div className="relative group">
+                  <label className="block text-[0.6875rem] font-medium tracking-[0.1em] uppercase text-on-surface-variant mb-2">
+                    Membership Plan
+                  </label>
+                  <select
+                    name="plan"
+                    value={formData.plan}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-transparent border-b border-outline-variant/20 text-on-surface focus:border-primary transition-all duration-500 rounded-none px-0 py-4 outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="STARTER" className="bg-surface-container-low text-on-surface">STARTER ($1.2K / YEAR)</option>
+                    <option value="LEGACY" className="bg-surface-container-low text-on-surface">LEGACY ($5K / YEAR)</option>
+                    <option value="IMMORTAL" className="bg-surface-container-low text-on-surface">IMMORTAL (PRIVATE)</option>
+                  </select>
+                  <span className="material-symbols-outlined absolute right-0 bottom-4 text-on-surface-variant/40 pointer-events-none">
+                    expand_more
+                  </span>
+                </div>
+
+                <div className="bg-surface-container-high border border-outline-variant/10 relative p-6">
                 <div className="flex justify-between items-center mb-4">
                   <label className="block text-[0.6875rem] font-bold tracking-[0.15em] uppercase text-tertiary">
                     Social Security Number
