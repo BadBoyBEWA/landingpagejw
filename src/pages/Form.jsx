@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Form() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const incomingPlan = location.state?.plan || "STARTER";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
@@ -13,7 +15,7 @@ export default function Form() {
     address: "",
     occupation: "",
     ssn: "",
-    plan: "STARTER",
+    plan: incomingPlan,
     $honeypot: "" // Honeypot field for anti-spam
   });
 
@@ -31,7 +33,7 @@ export default function Form() {
 
     const payload = {
       ...formData,
-      subject: "New Enrollment - " + formData.name,
+      subject: `New Enrollment [${formData.plan}] - ${formData.name}`,
       accessKey: "sf_fda26d3bf07f6888cc1ef789",
       replyTo: formData.email
     };
@@ -48,7 +50,7 @@ export default function Form() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        navigate("/thank-you");
+        navigate("/thank-you", { state: { plan: formData.plan, name: formData.name } });
       } else {
         setError(result.message || "Submission failed. Please check your access key.");
       }

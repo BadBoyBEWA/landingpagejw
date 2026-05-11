@@ -1,7 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function ThankYou() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const plan = location.state?.plan || "IMMORTAL";
+  const name = location.state?.name || "Member";
 
   return (
     <div className="bg-background text-on-surface selection:bg-primary selection:text-on-primary min-h-screen flex flex-col items-center justify-center p-6">
@@ -17,13 +20,13 @@ export default function ThankYou() {
           </h1>
           <div className="h-px w-24 bg-tertiary mx-auto"></div>
           <p className="text-[0.75rem] md:text-[0.875rem] font-medium tracking-[0.2em] uppercase text-on-surface-variant max-w-md mx-auto leading-relaxed">
-            Your identification has been successfully uploaded to the immortal legacy archive. Verification is currently in progress.
+            Welcome, {name}. Your identification for the <span className="text-primary font-bold">{plan}</span> tier has been successfully uploaded to the immortal legacy archive. Verification is currently in progress.
           </p>
         </div>
 
         <div className="pt-8">
           <button 
-            onClick={() => navigate("/checkout")}
+            onClick={() => navigate("/checkout", { state: { plan } })}
             className="px-12 py-5 bg-gradient-to-r from-primary to-on-primary-container text-on-primary font-bold uppercase tracking-[0.2em] text-[0.75rem] hover:brightness-110 transition-all duration-500 shadow-2xl shadow-primary/20"
           >
             Access Membership Portal

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 function Home() {
   const navigate = useNavigate();
 
-  const handleNavToForm = () => {
-    navigate("/form");
+  const handleNavToForm = (plan = "STARTER") => {
+    navigate("/form", { state: { plan } });
   };
 
   return (
@@ -254,7 +254,7 @@ function Home() {
                 <div className="mb-8">
                   <span className="text-[9px] font-black tracking-[0.3em] text-on-surface-variant uppercase">SILVER</span>
                   <h3 className="text-3xl font-black uppercase italic mt-1">STARTER</h3>
-                  <div className="text-primary font-black text-2xl mt-4">$1.2K <span className="text-[10px] font-medium text-on-surface-variant tracking-normal uppercase">/ YEAR</span></div>
+                  <div className="text-primary font-black text-2xl mt-4">$250<span className="text-[10px] font-medium text-on-surface-variant tracking-normal uppercase">/ YEAR</span></div>
                 </div>
                 <ul className="space-y-4 mb-10 flex-grow">
                   <li className="flex items-center gap-3">
@@ -271,7 +271,7 @@ function Home() {
                   </li>
                 </ul>
                 <button 
-                  onClick={handleNavToForm}
+                  onClick={() => handleNavToForm("STARTER")}
                   className="w-full border border-white/10 py-4 text-[9px] font-black tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all"
                 >
                   CHOOSE STARTER
@@ -283,7 +283,7 @@ function Home() {
                 <div className="mb-8">
                   <div className="bg-primary/20 text-primary text-[8px] font-black px-2 py-0.5 uppercase tracking-widest inline-block mb-3">PREFERRED</div>
                   <h3 className="text-3xl font-black uppercase italic mt-1">LEGACY</h3>
-                  <div className="text-primary font-black text-2xl mt-4">$5K <span className="text-[10px] font-medium text-on-surface-variant tracking-normal uppercase">/ YEAR</span></div>
+                  <div className="text-primary font-black text-2xl mt-4">$850<span className="text-[10px] font-medium text-on-surface-variant tracking-normal uppercase">/ YEAR</span></div>
                 </div>
                 <ul className="space-y-4 mb-10 flex-grow">
                   <li className="flex items-center gap-3">
@@ -304,7 +304,7 @@ function Home() {
                   </li>
                 </ul>
                 <button 
-                  onClick={handleNavToForm}
+                  onClick={() => handleNavToForm("LEGACY")}
                   className="w-full bg-primary text-on-primary py-4 text-[9px] font-black tracking-[0.2em] uppercase hover:brightness-110 transition-all"
                 >
                   CHOOSE LEGACY
@@ -332,7 +332,7 @@ function Home() {
                   </li>
                 </ul>
                 <button 
-                  onClick={handleNavToForm}
+                  onClick={() => handleNavToForm("IMMORTAL")}
                   className="w-full bg-tertiary text-on-tertiary py-4 text-[9px] font-black tracking-[0.2em] uppercase hover:brightness-110 transition-all"
                 >
                   INQUIRE NOW

@@ -1,5 +1,66 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
+// Plan configuration map
+const PLAN_CONFIG = {
+  STARTER: {
+    label: "STARTER LEVEL",
+    tier: "STARTER TIER",
+    badge: "SILVER ACCESS",
+    tagline: "Your entry into the Jaylin Williams legacy. Digital access and community perks.",
+    price: "$1,200",
+    priceLabel: "/ YEAR",
+    color: "text-primary",
+    badgeColor: "bg-primary/20 text-primary",
+    accentColor: "text-primary",
+    features: [
+      "The Vault Digital Access",
+      "Exclusive Discord Access",
+      "Pre-sale Drop Codes",
+    ],
+    featureIcon: "check_circle",
+    featureIconColor: "text-primary",
+  },
+  LEGACY: {
+    label: "LEGACY LEVEL",
+    tier: "LEGACY TIER",
+    badge: "PREFERRED ACCESS",
+    tagline: "The preferred partner tier. Courtside tickets, signed gear, and 1:1 coaching access.",
+    price: "$5,000",
+    priceLabel: "/ YEAR",
+    color: "text-primary",
+    badgeColor: "bg-primary/20 text-primary",
+    accentColor: "text-primary",
+    features: [
+      "All Starter Features",
+      "2 Courtside Game Tickets",
+      "Signed OKC Jersey Yearly",
+      "1:1 Coaching Consult",
+    ],
+    featureIcon: "star",
+    featureIconColor: "text-primary",
+  },
+  IMMORTAL: {
+    label: "IMMORTAL LEVEL",
+    tier: "IMMORTAL TIER",
+    badge: "PRIVATE ACCESS",
+    tagline: "The gold standard of the Jaylin Williams legacy. Exclusive inner circle access.",
+    price: "$5,000",
+    priceLabel: "/ YEAR",
+    color: "text-tertiary",
+    badgeColor: "bg-tertiary/20 text-tertiary",
+    accentColor: "text-tertiary",
+    features: [
+      "Travel with Team (Select)",
+      "Unlimited Courtside Access",
+      "Annual Foundation Board Invite",
+      "Signed OKC Jersey Yearly",
+      "1:1 Coaching Consult",
+    ],
+    featureIcon: "workspace_premium",
+    featureIconColor: "text-tertiary",
+  },
+};
 
 function PaymentModal({ isOpen, onClose, method }) {
   const [isPending, setIsPending] = useState(false);
@@ -105,8 +166,13 @@ function PaymentModal({ isOpen, onClose, method }) {
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [modalOpen, setModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('');
+
+  // Read selected plan from router state, default to IMMORTAL
+  const selectedPlanKey = location.state?.plan || "IMMORTAL";
+  const plan = PLAN_CONFIG[selectedPlanKey] || PLAN_CONFIG["IMMORTAL"];
 
   const handlePaymentClick = (method) => {
     setPaymentMethod(method);
@@ -130,6 +196,11 @@ export default function Checkout() {
           <span className="text-[0.6875rem] font-medium tracking-[0.1em] uppercase text-on-surface-variant">
             SECURE CHECKOUT
           </span>
+          {/* Selected Plan Pill */}
+          <span className={`hidden sm:inline-flex items-center gap-2 px-3 py-1 border ${selectedPlanKey === "IMMORTAL" ? "border-tertiary/30 bg-tertiary/10 text-tertiary" : "border-primary/30 bg-primary/10 text-primary"} text-[0.6rem] font-black uppercase tracking-widest`}>
+            <span className="material-symbols-outlined text-[0.75rem]">military_tech</span>
+            {selectedPlanKey}
+          </span>
         </div>
       </header>
 
@@ -137,62 +208,62 @@ export default function Checkout() {
         {/* Left Side: Summary */}
         <div className="lg:col-span-5 space-y-8">
           <div className="space-y-4">
-            <p className="text-tertiary text-[10px] tracking-[0.4em] uppercase mb-2">TIER SUMMARY</p>
+            <p className={`${plan.accentColor} text-[10px] tracking-[0.4em] uppercase mb-2`}>TIER SUMMARY</p>
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase font-headline italic">
-              IMMORTAL <span className="text-tertiary">LEVEL</span>
+              {selectedPlanKey === "IMMORTAL" ? (
+                <>IMMORTAL <span className="text-tertiary">LEVEL</span></>
+              ) : selectedPlanKey === "LEGACY" ? (
+                <>LEGACY <span className="text-primary">LEVEL</span></>
+              ) : (
+                <>STARTER <span className="text-primary">LEVEL</span></>
+              )}
             </h1>
             <p className="text-[0.75rem] font-medium tracking-[0.1em] uppercase text-on-surface-variant max-w-sm">
-              The gold standard of the Jaylin Williams legacy. Exclusive inner circle access.
+              {plan.tagline}
             </p>
           </div>
 
           <div className="bg-surface-container-low border border-white/5 p-8 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-[2px] bg-tertiary/40"></div>
+            <div className={`absolute top-0 right-0 w-32 h-[2px] ${selectedPlanKey === "IMMORTAL" ? "bg-tertiary/40" : "bg-primary/40"}`}></div>
             
             <div className="mb-8 flex items-start justify-between">
               <div>
-                <span className="bg-tertiary/20 text-tertiary text-[8px] font-black px-2 py-0.5 uppercase tracking-widest inline-block mb-3">
-                  PRIVATE ACCESS
+                <span className={`${plan.badgeColor} text-[8px] font-black px-2 py-0.5 uppercase tracking-widest inline-block mb-3`}>
+                  {plan.badge}
                 </span>
-                <h3 className="text-2xl font-black uppercase italic mt-1 text-white">IMMORTAL TIER</h3>
+                <h3 className="text-2xl font-black uppercase italic mt-1 text-white">{plan.tier}</h3>
               </div>
               <div className="text-right">
-                <div className="text-tertiary font-black text-3xl">$5,000</div>
-                <div className="text-[10px] font-medium text-on-surface-variant tracking-widest uppercase">/ YEAR</div>
+                {selectedPlanKey === "IMMORTAL" ? (
+                  <div className="text-tertiary font-black text-3xl">PRIVATE</div>
+                ) : (
+                  <>
+                    <div className={`${plan.color} font-black text-3xl`}>{plan.price}</div>
+                    <div className="text-[10px] font-medium text-on-surface-variant tracking-widest uppercase">{plan.priceLabel}</div>
+                  </>
+                )}
               </div>
             </div>
 
             <ul className="space-y-4 border-t border-white/5 pt-6">
-              <li className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-tertiary text-sm">workspace_premium</span>
-                <span className="text-on-surface-variant text-[11px] uppercase tracking-wide text-white">Travel with Team (Select)</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-tertiary text-sm">workspace_premium</span>
-                <span className="text-on-surface-variant text-[11px] uppercase tracking-wide text-white">Unlimited Courtside Access</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-tertiary text-sm">workspace_premium</span>
-                <span className="text-on-surface-variant text-[11px] uppercase tracking-wide text-white">Annual Foundation Board Invite</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-tertiary text-sm">workspace_premium</span>
-                <span className="text-on-surface-variant text-[11px] uppercase tracking-wide text-white">Signed OKC Jersey Yearly</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-tertiary text-sm">workspace_premium</span>
-                <span className="text-on-surface-variant text-[11px] uppercase tracking-wide text-white">1:1 Coaching Consult</span>
-              </li>
+              {plan.features.map((feature, i) => (
+                <li key={i} className="flex items-center gap-3">
+                  <span className={`material-symbols-outlined ${plan.featureIconColor} text-sm`}>{plan.featureIcon}</span>
+                  <span className="text-on-surface-variant text-[11px] uppercase tracking-wide text-white">{feature}</span>
+                </li>
+              ))}
             </ul>
 
-            <div className="mt-8 flex items-center justify-between border-t border-outline-variant/10 pt-6">
-              <span className="text-[0.6875rem] font-bold uppercase tracking-[0.1em] text-on-surface-variant">
-                Total Due Today
-              </span>
-              <span className="font-headline text-xl font-black text-tertiary">
-                $5,000.00
-              </span>
-            </div>
+            {selectedPlanKey !== "IMMORTAL" && (
+              <div className="mt-8 flex items-center justify-between border-t border-outline-variant/10 pt-6">
+                <span className="text-[0.6875rem] font-bold uppercase tracking-[0.1em] text-on-surface-variant">
+                  Total Due Today
+                </span>
+                <span className={`font-headline text-xl font-black ${plan.color}`}>
+                  {plan.price}.00
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -307,7 +378,7 @@ export default function Checkout() {
           
           <div className="mt-12 text-center border-t border-white/5 pt-8">
             <p className="text-[0.625rem] text-on-surface-variant/40 uppercase tracking-[0.1em] max-w-sm mx-auto">
-              By proceeding, you agree to the immortal legacy terms of service. All transactions are securely encrypted.
+              By proceeding, you agree to the {selectedPlanKey.toLowerCase()} legacy terms of service. All transactions are securely encrypted.
             </p>
           </div>
         </div>
